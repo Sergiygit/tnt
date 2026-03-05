@@ -179,15 +179,6 @@ body {
   min-height: 48.125rem;
   background-size: cover;
 }
-.page__quality-controlled {
-  display: none;
-}
-.page__make-kit {
-  display: none;
-}
-.page__built-for {
-  display: none;
-}
 
 .main__container {
   color: #fff;
