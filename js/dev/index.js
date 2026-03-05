@@ -4610,8 +4610,14 @@ function initSliders() {
       // красиво зникає/з’являється
       fadeEffect: { crossFade: true }
     });
+    const slides = document.querySelectorAll(".make-kit__big-slide");
+    const total = slides.length;
+    document.querySelector(".make-kit__slide-total").innerHTML = total;
     swiper.on("slideChange", () => {
       textSlider.slideTo(swiper.realIndex);
+      let index = swiper.realIndex + 1;
+      const counter = document.querySelector(".make-kit__slide-count");
+      counter.innerHTML = index;
     });
   }
 }

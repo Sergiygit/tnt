@@ -6,9 +6,9 @@
 		<link rel="shortcut icon" href="assets/img/favicon.ico">
 		<link href="https://fonts.googleapis.com/css?family=Google+Sans+Flex:regular,600" rel="stylesheet">
 		<title>Home Page</title>
-		<script type="module" crossorigin="" src="./js/index.min.js?v=1772655673709"></script>
-		<link rel="modulepreload" crossorigin="" href="./js/common.min.js?v=1772655673709">
-		<link rel="stylesheet" crossorigin="" href="./css/index.min.css?v=1772655673709">
+		<script type="module" crossorigin="" src="./js/index.min.js?v=1772740203700"></script>
+		<link rel="modulepreload" crossorigin="" href="./js/common.min.js?v=1772740203700">
+		<link rel="stylesheet" crossorigin="" href="./css/index.min.css?v=1772740203700">
 	</head>
 	<body>
 		<div class="wrapper">
@@ -150,10 +150,22 @@
 										</div>
 									</div>
 									<div class="make-kit__bottom-block">
-										<div class="make-kit__progress">1/5</div>
+										<div class="make-kit__progress">
+											<span class="make-kit__slide-count">1</span>
+											/
+											<span class="make-kit__slide-total"></span>
+										</div>
 										<div class="make-kit__buttons">
-											<button type="button" class="swiper-button-prev"></button>
-											<button type="button" class="swiper-button-next"></button>
+											<button type="button" class="swiper-button-prev _button">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none">
+													<path d="M15 18L9 12L15 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+												</svg>
+											</button>
+											<button type="button" class="swiper-button-next _button">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none">
+													<path d="M9 18L15 12L9 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+												</svg>
+											</button>
 										</div>
 									</div>
 								</div>
@@ -163,27 +175,27 @@
 										<!-- Частина слайдера, що рухається -->
 										<div class="make-kit__wrapper swiper-wrapper">
 											<!-- Слайд -->
-											<div class="make-kit__slide swiper-slide">
+											<div class="make-kit__big-slide swiper-slide">
 												<picture>
 													<img alt="timelines" src="./assets/img/make-kit/timelines.webp">
 												</picture>
 											</div>
-											<div class="make-kit__slide swiper-slide">
+											<div class="make-kit__big-slide swiper-slide">
 												<picture>
 													<img alt="fixed quote" src="./assets/img/make-kit/fixed-quote.webp">
 												</picture>
 											</div>
-											<div class="make-kit__slide swiper-slide">
+											<div class="make-kit__big-slide swiper-slide">
 												<picture>
 													<img alt="drawings" src="./assets/img/make-kit/drawings.webp">
 												</picture>
 											</div>
-											<div class="make-kit__slide swiper-slide">
+											<div class="make-kit__big-slide swiper-slide">
 												<picture>
 													<img alt="man build manager" src="./assets/img/make-kit/man-build-manager.webp">
 												</picture>
 											</div>
-											<div class="make-kit__slide swiper-slide">
+											<div class="make-kit__big-slide swiper-slide">
 												<picture>
 													<img alt="engeneer plan" src="./assets/img/make-kit/engeneer-plan.webp">
 												</picture>
@@ -222,6 +234,56 @@
 									</div>
 								</div>
 							</div>
+						</div>
+					</section>
+					<section class="page__everything-need everything-need">
+						<div class="everything-need__container">
+							<h2 class="everything-need__title _title-h2">
+								<span class="_left-margin">
+									<span class="_title-red">Everything</span>
+									You Need
+								</span>
+								<span>in One Complete Kit</span>
+							</h2>
+							<div class="everything-need__interactive">
+								<picture>
+									<source media="(max-width: 600px)" srcset="./assets/img/interactive-600.webp" type="image/webp">
+									<source media="(max-width: 1200px)" srcset="./assets/img/interactive-1200.webp" type="image/webp">
+									<img alt="interactive-image" src="./assets/img/interactive.webp">
+								</picture>
+								<div class="everything-need__tips _1">
+									<button class="everything-need__tips-button">
+										<span class="everything-need__tips-button-text">+</span>
+										<p class="everything-need__tips-text">Red-iron l-Beam primary frames</p>
+									</button>
+								</div>
+								<div class="everything-need__tips _2">
+									<button class="everything-need__tips-button">
+										<span class="everything-need__tips-button-text">+</span>
+										<p class="everything-need__tips-text">Red-iron l-Beam primary frames2</p>
+									</button>
+								</div>
+								<div class="everything-need__tips _3">
+									<button class="everything-need__tips-button">
+										<span class="everything-need__tips-button-text">+</span>
+										<p class="everything-need__tips-text">Red-iron l-Beam primary frames3</p>
+									</button>
+								</div>
+								<div class="everything-need__tips _4">
+									<button class="everything-need__tips-button">
+										<span class="everything-need__tips-button-text">+</span>
+										<p class="everything-need__tips-text">Red-iron l-Beam primary frames4</p>
+									</button>
+								</div>
+								<div class="everything-need__tips _5">
+									<button class="everything-need__tips-button">
+										<span class="everything-need__tips-button-text">+</span>
+										<p class="everything-need__tips-text">Red-iron l-Beam primary frames5</p>
+									</button>
+								</div>
+							</div>
+							<h3 class="everything-need__red-title">Strong steel,</h3>
+							<h3 class="everything-need__red-title">clean engineering, everything in one shipment</h3>
 						</div>
 					</section>
 					<section class="page__built-for built-for">
