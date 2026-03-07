@@ -1,4 +1,4 @@
-import { b as bodyLockToggle, a as bodyLockStatus } from "./common.min.js";
+import { d as dataMediaQueries, s as slideToggle, a as slideUp, b as bodyLockToggle, c as bodyLockStatus } from "./common.min.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) return;
@@ -28,6 +28,124 @@ import { b as bodyLockToggle, a as bodyLockStatus } from "./common.min.js";
     fetch(link.href, fetchOpts);
   }
 })();
+function spollers() {
+  const spollersArray = document.querySelectorAll("[data-fls-spollers]");
+  if (spollersArray.length > 0) {
+    let initSpollers = function(spollersArray2, matchMedia = false) {
+      spollersArray2.forEach((spollersBlock) => {
+        spollersBlock = matchMedia ? spollersBlock.item : spollersBlock;
+        if (matchMedia.matches || !matchMedia) {
+          spollersBlock.classList.add("--spoller-init");
+          initSpollerBody(spollersBlock);
+        } else {
+          spollersBlock.classList.remove("--spoller-init");
+          initSpollerBody(spollersBlock, false);
+        }
+      });
+    }, initSpollerBody = function(spollersBlock, hideSpollerBody = true) {
+      let spollerItems = spollersBlock.querySelectorAll("details");
+      if (spollerItems.length) {
+        spollerItems.forEach((spollerItem) => {
+          let spollerTitle = spollerItem.querySelector("summary");
+          if (hideSpollerBody) {
+            spollerTitle.removeAttribute("tabindex");
+            if (!spollerItem.hasAttribute("data-fls-spollers-open")) {
+              spollerItem.open = false;
+              spollerTitle.nextElementSibling.hidden = true;
+            } else {
+              spollerTitle.classList.add("--spoller-active");
+              spollerItem.open = true;
+            }
+          } else {
+            spollerTitle.setAttribute("tabindex", "-1");
+            spollerTitle.classList.remove("--spoller-active");
+            spollerItem.open = true;
+            spollerTitle.nextElementSibling.hidden = false;
+          }
+        });
+      }
+    }, setSpollerAction = function(e) {
+      const el = e.target;
+      if (el.closest("summary") && el.closest("[data-fls-spollers]")) {
+        e.preventDefault();
+        if (el.closest("[data-fls-spollers]").classList.contains("--spoller-init")) {
+          const spollerTitle = el.closest("summary");
+          const spollerBlock = spollerTitle.closest("details");
+          const spollersBlock = spollerTitle.closest("[data-fls-spollers]");
+          const oneSpoller = spollersBlock.hasAttribute("data-fls-spollers-one");
+          const scrollSpoller = spollerBlock.hasAttribute("data-fls-spollers-scroll");
+          const spollerSpeed = spollersBlock.dataset.flsSpollersSpeed ? parseInt(spollersBlock.dataset.flsSpollersSpeed) : 500;
+          if (!spollersBlock.querySelectorAll(".--slide").length) {
+            if (oneSpoller && !spollerBlock.open) {
+              hideSpollersBody(spollersBlock);
+            }
+            !spollerBlock.open ? spollerBlock.open = true : setTimeout(() => {
+              spollerBlock.open = false;
+            }, spollerSpeed);
+            spollerTitle.classList.toggle("--spoller-active");
+            slideToggle(spollerTitle.nextElementSibling, spollerSpeed);
+            if (scrollSpoller && spollerTitle.classList.contains("--spoller-active")) {
+              const scrollSpollerValue = spollerBlock.dataset.flsSpollersScroll;
+              const scrollSpollerOffset = +scrollSpollerValue ? +scrollSpollerValue : 0;
+              const scrollSpollerNoHeader = spollerBlock.hasAttribute("data-fls-spollers-scroll-noheader") ? document.querySelector(".header").offsetHeight : 0;
+              window.scrollTo(
+                {
+                  top: spollerBlock.offsetTop - (scrollSpollerOffset + scrollSpollerNoHeader),
+                  behavior: "smooth"
+                }
+              );
+            }
+          }
+        }
+      }
+      if (!el.closest("[data-fls-spollers]")) {
+        const spollersClose = document.querySelectorAll("[data-fls-spollers-close]");
+        if (spollersClose.length) {
+          spollersClose.forEach((spollerClose) => {
+            const spollersBlock = spollerClose.closest("[data-fls-spollers]");
+            const spollerCloseBlock = spollerClose.parentNode;
+            if (spollersBlock.classList.contains("--spoller-init")) {
+              const spollerSpeed = spollersBlock.dataset.flsSpollersSpeed ? parseInt(spollersBlock.dataset.flsSpollersSpeed) : 500;
+              spollerClose.classList.remove("--spoller-active");
+              slideUp(spollerClose.nextElementSibling, spollerSpeed);
+              setTimeout(() => {
+                spollerCloseBlock.open = false;
+              }, spollerSpeed);
+            }
+          });
+        }
+      }
+    }, hideSpollersBody = function(spollersBlock) {
+      const spollerActiveBlock = spollersBlock.querySelector("details[open]");
+      if (spollerActiveBlock && !spollersBlock.querySelectorAll(".--slide").length) {
+        const spollerActiveTitle = spollerActiveBlock.querySelector("summary");
+        const spollerSpeed = spollersBlock.dataset.flsSpollersSpeed ? parseInt(spollersBlock.dataset.flsSpollersSpeed) : 500;
+        spollerActiveTitle.classList.remove("--spoller-active");
+        slideUp(spollerActiveTitle.nextElementSibling, spollerSpeed);
+        setTimeout(() => {
+          spollerActiveBlock.open = false;
+        }, spollerSpeed);
+      }
+    };
+    document.addEventListener("click", setSpollerAction);
+    const spollersRegular = Array.from(spollersArray).filter(function(item, index, self) {
+      return !item.dataset.flsSpollers.split(",")[0];
+    });
+    if (spollersRegular.length) {
+      initSpollers(spollersRegular);
+    }
+    let mdQueriesArray = dataMediaQueries(spollersArray, "flsSpollers");
+    if (mdQueriesArray && mdQueriesArray.length) {
+      mdQueriesArray.forEach((mdQueriesItem) => {
+        mdQueriesItem.matchMedia.addEventListener("change", function() {
+          initSpollers(mdQueriesItem.itemsArray, mdQueriesItem.matchMedia);
+        });
+        initSpollers(mdQueriesItem.itemsArray, mdQueriesItem.matchMedia);
+      });
+    }
+  }
+}
+window.addEventListener("load", spollers);
 function isObject$1(obj) {
   return obj !== null && typeof obj === "object" && "constructor" in obj && obj.constructor === Object;
 }
@@ -4322,6 +4440,304 @@ function Navigation({
     destroy
   });
 }
+function Autoplay({
+  swiper,
+  extendParams,
+  on,
+  emit,
+  params
+}) {
+  swiper.autoplay = {
+    running: false,
+    paused: false,
+    timeLeft: 0
+  };
+  extendParams({
+    autoplay: {
+      enabled: false,
+      delay: 3e3,
+      waitForTransition: true,
+      disableOnInteraction: false,
+      stopOnLastSlide: false,
+      reverseDirection: false,
+      pauseOnMouseEnter: false
+    }
+  });
+  let timeout;
+  let raf;
+  let autoplayDelayTotal = params && params.autoplay ? params.autoplay.delay : 3e3;
+  let autoplayDelayCurrent = params && params.autoplay ? params.autoplay.delay : 3e3;
+  let autoplayTimeLeft;
+  let autoplayStartTime = (/* @__PURE__ */ new Date()).getTime();
+  let wasPaused;
+  let isTouched;
+  let pausedByTouch;
+  let touchStartTimeout;
+  let pausedByInteraction;
+  let pausedByPointerEnter;
+  function onTransitionEnd(e) {
+    if (!swiper || swiper.destroyed || !swiper.wrapperEl) return;
+    if (e.target !== swiper.wrapperEl) return;
+    swiper.wrapperEl.removeEventListener("transitionend", onTransitionEnd);
+    if (pausedByPointerEnter || e.detail && e.detail.bySwiperTouchMove) {
+      return;
+    }
+    resume();
+  }
+  const calcTimeLeft = () => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    if (swiper.autoplay.paused) {
+      wasPaused = true;
+    } else if (wasPaused) {
+      autoplayDelayCurrent = autoplayTimeLeft;
+      wasPaused = false;
+    }
+    const timeLeft = swiper.autoplay.paused ? autoplayTimeLeft : autoplayStartTime + autoplayDelayCurrent - (/* @__PURE__ */ new Date()).getTime();
+    swiper.autoplay.timeLeft = timeLeft;
+    emit("autoplayTimeLeft", timeLeft, timeLeft / autoplayDelayTotal);
+    raf = requestAnimationFrame(() => {
+      calcTimeLeft();
+    });
+  };
+  const getSlideDelay = () => {
+    let activeSlideEl;
+    if (swiper.virtual && swiper.params.virtual.enabled) {
+      activeSlideEl = swiper.slides.find((slideEl) => slideEl.classList.contains("swiper-slide-active"));
+    } else {
+      activeSlideEl = swiper.slides[swiper.activeIndex];
+    }
+    if (!activeSlideEl) return void 0;
+    const currentSlideDelay = parseInt(activeSlideEl.getAttribute("data-swiper-autoplay"), 10);
+    return currentSlideDelay;
+  };
+  const getTotalDelay = () => {
+    let totalDelay = swiper.params.autoplay.delay;
+    const currentSlideDelay = getSlideDelay();
+    if (!Number.isNaN(currentSlideDelay) && currentSlideDelay > 0) {
+      totalDelay = currentSlideDelay;
+    }
+    return totalDelay;
+  };
+  const run = (delayForce) => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    cancelAnimationFrame(raf);
+    calcTimeLeft();
+    let delay = delayForce;
+    if (typeof delay === "undefined") {
+      delay = getTotalDelay();
+      autoplayDelayTotal = delay;
+      autoplayDelayCurrent = delay;
+    }
+    autoplayTimeLeft = delay;
+    const speed = swiper.params.speed;
+    const proceed = () => {
+      if (!swiper || swiper.destroyed) return;
+      if (swiper.params.autoplay.reverseDirection) {
+        if (!swiper.isBeginning || swiper.params.loop || swiper.params.rewind) {
+          swiper.slidePrev(speed, true, true);
+          emit("autoplay");
+        } else if (!swiper.params.autoplay.stopOnLastSlide) {
+          swiper.slideTo(swiper.slides.length - 1, speed, true, true);
+          emit("autoplay");
+        }
+      } else {
+        if (!swiper.isEnd || swiper.params.loop || swiper.params.rewind) {
+          swiper.slideNext(speed, true, true);
+          emit("autoplay");
+        } else if (!swiper.params.autoplay.stopOnLastSlide) {
+          swiper.slideTo(0, speed, true, true);
+          emit("autoplay");
+        }
+      }
+      if (swiper.params.cssMode) {
+        autoplayStartTime = (/* @__PURE__ */ new Date()).getTime();
+        requestAnimationFrame(() => {
+          run();
+        });
+      }
+    };
+    if (delay > 0) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        proceed();
+      }, delay);
+    } else {
+      requestAnimationFrame(() => {
+        proceed();
+      });
+    }
+    return delay;
+  };
+  const start = () => {
+    autoplayStartTime = (/* @__PURE__ */ new Date()).getTime();
+    swiper.autoplay.running = true;
+    run();
+    emit("autoplayStart");
+  };
+  const stop = () => {
+    swiper.autoplay.running = false;
+    clearTimeout(timeout);
+    cancelAnimationFrame(raf);
+    emit("autoplayStop");
+  };
+  const pause = (internal, reset) => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    clearTimeout(timeout);
+    if (!internal) {
+      pausedByInteraction = true;
+    }
+    const proceed = () => {
+      emit("autoplayPause");
+      if (swiper.params.autoplay.waitForTransition) {
+        swiper.wrapperEl.addEventListener("transitionend", onTransitionEnd);
+      } else {
+        resume();
+      }
+    };
+    swiper.autoplay.paused = true;
+    if (reset) {
+      proceed();
+      return;
+    }
+    const delay = autoplayTimeLeft || swiper.params.autoplay.delay;
+    autoplayTimeLeft = delay - ((/* @__PURE__ */ new Date()).getTime() - autoplayStartTime);
+    if (swiper.isEnd && autoplayTimeLeft < 0 && !swiper.params.loop) return;
+    if (autoplayTimeLeft < 0) autoplayTimeLeft = 0;
+    proceed();
+  };
+  const resume = () => {
+    if (swiper.isEnd && autoplayTimeLeft < 0 && !swiper.params.loop || swiper.destroyed || !swiper.autoplay.running) return;
+    autoplayStartTime = (/* @__PURE__ */ new Date()).getTime();
+    if (pausedByInteraction) {
+      pausedByInteraction = false;
+      run(autoplayTimeLeft);
+    } else {
+      run();
+    }
+    swiper.autoplay.paused = false;
+    emit("autoplayResume");
+  };
+  const onVisibilityChange = () => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    const document2 = getDocument();
+    if (document2.visibilityState === "hidden") {
+      pausedByInteraction = true;
+      pause(true);
+    }
+    if (document2.visibilityState === "visible") {
+      resume();
+    }
+  };
+  const onPointerEnter = (e) => {
+    if (e.pointerType !== "mouse") return;
+    pausedByInteraction = true;
+    pausedByPointerEnter = true;
+    if (swiper.animating || swiper.autoplay.paused) return;
+    pause(true);
+  };
+  const onPointerLeave = (e) => {
+    if (e.pointerType !== "mouse") return;
+    pausedByPointerEnter = false;
+    if (swiper.autoplay.paused) {
+      resume();
+    }
+  };
+  const attachMouseEvents = () => {
+    if (swiper.params.autoplay.pauseOnMouseEnter) {
+      swiper.el.addEventListener("pointerenter", onPointerEnter);
+      swiper.el.addEventListener("pointerleave", onPointerLeave);
+    }
+  };
+  const detachMouseEvents = () => {
+    if (swiper.el && typeof swiper.el !== "string") {
+      swiper.el.removeEventListener("pointerenter", onPointerEnter);
+      swiper.el.removeEventListener("pointerleave", onPointerLeave);
+    }
+  };
+  const attachDocumentEvents = () => {
+    const document2 = getDocument();
+    document2.addEventListener("visibilitychange", onVisibilityChange);
+  };
+  const detachDocumentEvents = () => {
+    const document2 = getDocument();
+    document2.removeEventListener("visibilitychange", onVisibilityChange);
+  };
+  on("init", () => {
+    if (swiper.params.autoplay.enabled) {
+      attachMouseEvents();
+      attachDocumentEvents();
+      start();
+    }
+  });
+  on("destroy", () => {
+    detachMouseEvents();
+    detachDocumentEvents();
+    if (swiper.autoplay.running) {
+      stop();
+    }
+  });
+  on("_freeModeStaticRelease", () => {
+    if (pausedByTouch || pausedByInteraction) {
+      resume();
+    }
+  });
+  on("_freeModeNoMomentumRelease", () => {
+    if (!swiper.params.autoplay.disableOnInteraction) {
+      pause(true, true);
+    } else {
+      stop();
+    }
+  });
+  on("beforeTransitionStart", (_s, speed, internal) => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    if (internal || !swiper.params.autoplay.disableOnInteraction) {
+      pause(true, true);
+    } else {
+      stop();
+    }
+  });
+  on("sliderFirstMove", () => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    if (swiper.params.autoplay.disableOnInteraction) {
+      stop();
+      return;
+    }
+    isTouched = true;
+    pausedByTouch = false;
+    pausedByInteraction = false;
+    touchStartTimeout = setTimeout(() => {
+      pausedByInteraction = true;
+      pausedByTouch = true;
+      pause(true);
+    }, 200);
+  });
+  on("touchEnd", () => {
+    if (swiper.destroyed || !swiper.autoplay.running || !isTouched) return;
+    clearTimeout(touchStartTimeout);
+    clearTimeout(timeout);
+    if (swiper.params.autoplay.disableOnInteraction) {
+      pausedByTouch = false;
+      isTouched = false;
+      return;
+    }
+    if (pausedByTouch && swiper.params.cssMode) resume();
+    pausedByTouch = false;
+    isTouched = false;
+  });
+  on("slideChange", () => {
+    if (swiper.destroyed || !swiper.autoplay.running) return;
+    if (swiper.autoplay.paused) {
+      autoplayTimeLeft = getTotalDelay();
+      autoplayDelayTotal = getTotalDelay();
+    }
+  });
+  Object.assign(swiper.autoplay, {
+    start,
+    stop,
+    pause,
+    resume
+  });
+}
 function Thumb({
   swiper,
   extendParams,
@@ -4536,7 +4952,7 @@ function initSliders() {
       // <- Вказуємо склас потрібного слайдера
       // Підключаємо модулі слайдера
       // для конкретного випадку
-      modules: [Navigation, Thumb],
+      modules: [Navigation, Thumb, Autoplay],
       observer: true,
       observeParents: true,
       slidesPerView: 1,
@@ -4548,14 +4964,12 @@ function initSliders() {
       //loop: true,
       //preloadImages: false,
       //lazy: true,
-      /*
       // Ефекти
-      effect: 'fade',
+      effect: "fade",
       autoplay: {
-      	delay: 3000,
-      	disableOnInteraction: false,
+        delay: 3e3,
+        disableOnInteraction: false
       },
-      */
       // Пагінація
       /*
       pagination: {
