@@ -28,6 +28,34 @@ import { d as dataMediaQueries, s as slideToggle, a as slideUp, b as bodyLockTog
     fetch(link.href, fetchOpts);
   }
 })();
+const title = document.querySelectorAll(".why-choose__title-item");
+const images = document.querySelectorAll(".why-choose__image-item");
+const text = document.querySelectorAll(".why-choose__text-item");
+function whyChoose(inf) {
+  for (let i = 0; i < title.length; i++) {
+    title[i].classList.remove("_active");
+    text[i].classList.remove("_active");
+    images[i].classList.remove("_active");
+    if (inf == title[i] || inf == text[i]) {
+      title[i].classList.add("_active");
+      text[i].classList.add("_active");
+      images[i].classList.add("_active");
+    }
+  }
+}
+function addListener() {
+  title.forEach((el) => {
+    el.addEventListener("click", () => {
+      whyChoose(el);
+    });
+  });
+  text.forEach((el) => {
+    el.addEventListener("click", () => {
+      whyChoose(el);
+    });
+  });
+}
+addListener();
 function spollers() {
   const spollersArray = document.querySelectorAll("[data-fls-spollers]");
   if (spollersArray.length > 0) {
@@ -476,9 +504,9 @@ function elementIsChildOf(el, parent) {
   }
   return isChild;
 }
-function showWarning(text) {
+function showWarning(text2) {
   try {
-    console.warn(text);
+    console.warn(text2);
     return;
   } catch (err) {
   }
